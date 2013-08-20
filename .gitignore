@@ -4,3 +4,12 @@
 *.jar
 *.war
 *.ear
+
+# Idea Files/Folders
+*.iml
+.idea/
+out/
+build/
+
+# Gradle
+.gradle/
