@@ -34,7 +34,7 @@ public final class WebCrawler implements AutoCloseable {
      * Default Validator
      */
     private SiteValidityEvaluator _siteValidator =
-            (siteContent) -> siteContent.matches(".*\\<[^>]+>.*");
+            (site) -> site.getContent().matches(".*\\<[^>]+>.*");
 
 
     public WebCrawler() {
@@ -152,7 +152,7 @@ public final class WebCrawler implements AutoCloseable {
 
     private CompletableFuture<Optional<WebSite>> calculateRelevance(WebSite site) {
         return CompletableFuture.supplyAsync(()
-                -> _siteValidator.isSiteValid(site.getContent())
+                -> _siteValidator.isSiteValid(site)
                 ? Optional.of(site)
                 : Optional.<WebSite>empty());
     }

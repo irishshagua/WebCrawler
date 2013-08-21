@@ -1,7 +1,14 @@
 package test.webcrawler;
 
+/**
+ *
+ */
 public interface SiteValidityEvaluator {
 
-    public boolean isSiteValid(String siteContent);
-
+    /**
+     * Check weather the page content
+     * @param siteContent
+     * @return
+     */
+    public boolean isSiteValid(WebSite siteContent);
 }
