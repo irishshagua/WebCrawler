@@ -15,15 +15,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
  *
  */
 public final class WebCrawler implements AutoCloseable {
-
-    private Logger LOG = Logger.getAnonymousLogger();
 
     private static WebCrawler _instance = null;
 
@@ -37,12 +34,9 @@ public final class WebCrawler implements AutoCloseable {
     /*
      * Default Validator
      */
-    private SiteValidityEvaluator _siteValidator = new SiteValidityEvaluator() {
-        @Override
-        public boolean isSiteValid(String siteContent) {
-            return siteContent.matches(".*\\<[^>]+>.*");
-        }
-    };
+
+    private SiteValidityEvaluator _siteValidator =
+            (siteContent) -> siteContent.matches(".*\\<[^>]+>.*");
 
     /*
      *********************************************
@@ -84,7 +78,6 @@ public final class WebCrawler implements AutoCloseable {
      */
     public void setSiteValidator(SiteValidityEvaluator siteValidator) {
         _siteValidator = siteValidator;
-        LOG.info("Crawler Site Validator updated");
     }
 
     /**
@@ -106,9 +99,7 @@ public final class WebCrawler implements AutoCloseable {
     public void addSiteToCrawl(String site) {
         try {
             _sites.add(new URL(validateSiteUrl(site)));
-            LOG.info(site + " was successfully added to Crawler list");
-        } catch (IOException e) {
-        } // We dont add non valid URL's
+        } catch (IOException e) {} // We dont add non valid URL's
     }
 
     /**
@@ -129,8 +120,6 @@ public final class WebCrawler implements AutoCloseable {
                 )
         );
 
-        LOG.info("Call to get valid sites performed. Returning "
-                + validSites.size() + " sites to requestor");
         return validSites;
     }
 
@@ -165,10 +154,9 @@ public final class WebCrawler implements AutoCloseable {
     }
 
     private WebSite scrapeSite(URL site) {
-        LOG.info("Starting scrapeSite for [" + site.toString() + "]");
         try (BufferedReader in = new BufferedReader(new InputStreamReader(site.openStream()))) {
             StringBuilder sb = new StringBuilder();
-            in.lines().forEachOrdered(line -> sb.append(line));
+            in.lines().forEachOrdered(sb::append);
 
             return new WebSite(site, sb.toString());
         } catch (IOException e) {
@@ -177,7 +165,6 @@ public final class WebCrawler implements AutoCloseable {
     }
 
     private CompletableFuture<Optional<WebSite>> calculateRelevance(WebSite site) {
-        LOG.info("Check if returned site content is relevant");
         return CompletableFuture.supplyAsync(()
                 -> _siteValidator.isSiteValid(site.getContent())
                 ? Optional.of(site)
