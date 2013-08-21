@@ -168,10 +168,9 @@ public final class WebCrawler implements AutoCloseable {
         LOG.info("Starting scrapeSite for [" + site.toString() + "]");
         try (BufferedReader in = new BufferedReader(new InputStreamReader(site.openStream()))) {
             StringBuilder sb = new StringBuilder();
-            while ((sb.append(in.readLine())) != null) {}
+            in.lines().forEachOrdered(line -> sb.append(line));
 
             return new WebSite(site, sb.toString());
-
         } catch (IOException e) {
             return WebSite.INVALID_SITE; // Cannot open stream
         }
