@@ -11,9 +11,4 @@ public class WebCrawlerTest {
         WebCrawler crawler = WebCrawler.getInstance();
         Assert.assertNotNull(crawler);
     }
-
-    @Test
-    public void failTest() {
-        Assert.assertEquals(1, 2);
-    }
 }

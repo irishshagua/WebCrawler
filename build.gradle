@@ -5,11 +5,12 @@
 apply plugin: 'java'
 
 sourceCompatibility = 1.8
+test.scanForTestClasses = false  // Gradle Issue with Java 1.8
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.+'
+    testCompile 'junit:junit:4.+'
 }
