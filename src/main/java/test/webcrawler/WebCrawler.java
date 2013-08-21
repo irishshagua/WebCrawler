@@ -22,38 +22,24 @@ import java.util.stream.Collectors;
  */
 public final class WebCrawler implements AutoCloseable {
 
-    private static WebCrawler _instance = null;
-
     private ExecutorService _executor;
     private ScheduledExecutorService _scheduler;
     private Set<URL> _sites;
     private Set<CompletableFuture<Optional<WebSite>>> _relaventSites;
 
-    private final long SLEEP_BETWEEN_CRAWL_SITE_POLLS = 2L;
+    private final long SLEEP_BETWEEN_CRAWL_SITE_POLLS   = 2L;
+    private final int  FIXED_THREAD_POOL_SIZE           = 4;
 
     /*
      * Default Validator
      */
-
     private SiteValidityEvaluator _siteValidator =
             (siteContent) -> siteContent.matches(".*\\<[^>]+>.*");
 
-    /*
-     *********************************************
-     * SINGLETON INSTANTIATION SECTION
-     * *******************************************
-     */
-    public static WebCrawler getInstance() {
-        if (_instance == null) {
-            _instance = new WebCrawler();
-        }
 
-        return _instance;
-    }
-
-    private WebCrawler() {
+    public WebCrawler() {
         _scheduler = Executors.newSingleThreadScheduledExecutor();
-        _executor = Executors.newFixedThreadPool(4);
+        _executor = Executors.newFixedThreadPool(FIXED_THREAD_POOL_SIZE);
         _sites = new HashSet<>();
         _relaventSites = Collections.newSetFromMap(new ConcurrentHashMap<>()); // Is there a better way to do this?
 
